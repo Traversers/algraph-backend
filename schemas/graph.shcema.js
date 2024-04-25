@@ -4,7 +4,6 @@ const Edge = require("./edge.schema");
 
 const Graph = new Schema({
   adjacencyLists: {
-    // type: [[Edge]],
     type: [[]],
     default: [],
   },

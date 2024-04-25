@@ -16,8 +16,8 @@ const app = express();
 app.use(cookieParser());
 app.use(
   cors({
-    origin: "http://localhost:5173",
-    optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
+    origin: process.env.FRONTEND_SERVER_ORIGIN,
+    optionsSuccessStatus: 200,
   })
 );
 app.use(bodyParser.urlencoded({ extended: true }));
