@@ -40,10 +40,7 @@ const SUCCESS_CODES_MAP = new Map([
   [CRUD_OPS.DELETED, 204],
 ]);
 
-const WEIGHT = "weight";
-const DESTINATION = "destination";
-
-const GRAPH_FIELDS = { WEIGHT, DESTINATION };
+const GRAPH_FIELDS = { WEIGHT: "weight", DESTINATION: "destination" };
 
 module.exports = {
   PATH_AVATARS,
