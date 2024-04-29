@@ -41,11 +41,12 @@ const objIsEdge = (obj, vertexIndex) => {
   for (let i = 0; i < fields.length; i++) {
     if (!validFields.includes(fields[i])) return false;
   }
-  const condition1 = !fields.includes(GRAPH_FIELDS.WEIGHT);
-  const condition2 = obj[DESTINATION] === null;
-  const condition3 = obj[DESTINATION] == `${vertexIndex}`;
+  const hasDestinationKey = fields.includes(GRAPH_FIELDS.DESTINATION);
+  const hasDestinationValue = obj[DESTINATION] !== null;
+  const isConnectedToSelf = obj[DESTINATION] === `${vertexIndex}`;
 
-  if (condition1 || condition2 || condition3) return false;
+  if (!hasDestinationKey || !hasDestinationValue || isConnectedToSelf)
+    return false;
 
   if (!fields.includes(WEIGHT) || isNaN(parseFloat(obj[WEIGHT]))) return false;
 
