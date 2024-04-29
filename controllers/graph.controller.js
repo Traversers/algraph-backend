@@ -1,51 +1,48 @@
-const graphDbService = require("../services/graph.service");
+const graphService = require("../services/graph.service");
+const { ERRORS, CRUD_OPS } = require("../constants");
+
 const {
-  ERROR_GRAPH_NOT_FOUND,
-  ERROR_INVALID_GRAPH,
-  INTERNAL_ERROR,
-} = require("../constants");
-const { isValidGraph } = require("../services/utils");
+  isValidGraph,
+  respondWithError,
+  respondWithStatus,
+} = require("../services/utils");
 
 const publishGraph = async (req, res) => {
   try {
     const { adjacencyLists, userId } = req.body;
     if (!isValidGraph(adjacencyLists)) {
-      res.send({ error: ERROR_INVALID_GRAPH });
-      return;
+      return respondWithError(res, ERRORS.INVALID_GRAPH);
     }
-    const newGraph = await graphDbService.DbCreateGraph({
+    const newGraph = await graphService.createGraph({
       adjacencyLists,
       userId,
     });
-    return res.send(newGraph);
+    return respondWithStatus(res, CRUD_OPS.CREATED, newGraph);
   } catch (err) {
-    console.log(err);
-    res.send({ error: INTERNAL_ERROR });
+    return respondWithError(res, ERRORS.INTERNAL_ERROR);
   }
 };
 
 const getGraphById = async (req, res) => {
   try {
     const { id } = req.body;
-    const tryGetGraph = await graphDbService.DbReadGraph(id);
-    if (tryGetGraph) {
-      res.send(tryGetGraph);
-      return;
+    const graph = await graphService.readGraph(id);
+    if (graph) {
+      return respondWithStatus(res, CRUD_OPS.READ_ONE, graph);
     } else {
-      return res.send({ error: ERROR_GRAPH_NOT_FOUND });
+      return respondWithError(res, ERRORS.GRAPH_NOT_FOUND);
     }
   } catch (err) {
-    console.log(err);
-    res.send({ error: INTERNAL_ERROR });
+    return respondWithError(res, ERRORS.INTERNAL_ERROR);
   }
 };
 
 const getAllGraphs = async (req, res) => {
   try {
-    return res.send(await graphDbService.DbReadAll());
+    const graphsArray = await graphService.readAll();
+    return respondWithStatus(res, CRUD_OPS.READ_MANY, graphsArray);
   } catch (err) {
-    console.log(err);
-    res.send({ error: INTERNAL_ERROR });
+    return respondWithError(res, ERRORS.INTERNAL_ERROR);
   }
 };
 
@@ -53,25 +50,22 @@ const updateGraph = async (req, res) => {
   try {
     const { id, adjacencyLists } = req.body;
     if (!isValidGraph(adjacencyLists)) {
-      res.send({ error: ERROR_INVALID_GRAPH });
-      return;
+      return respondWithError(res, ERRORS.INVALID_GRAPH);
     }
-    const updatedGraph = await graphDbService.DbUpdateGraph(id, adjacencyLists);
-    return res.send(updatedGraph);
+    const updatedGraph = await graphService.updateGraph(id, adjacencyLists);
+    return respondWithStatus(res, CRUD_OPS.UPDATED, updatedGraph);
   } catch (err) {
-    console.log(err);
-    res.send({ error: INTERNAL_ERROR });
+    return respondWithError(res, ERRORS.INTERNAL_ERROR);
   }
 };
 
 const deleteGraph = async (req, res) => {
   try {
     const { id } = req.body;
-    await graphDbService.DbDeleteGraph(id);
-    return res.send({});
+    const dbResponse = await graphService.deleteGraph(id);
+    return respondWithStatus(res, CRUD_OPS.DELETED, dbResponse);
   } catch (err) {
-    console.log(err);
-    res.send({ error: INTERNAL_ERROR });
+    return respondWithError(res, ERRORS.INTERNAL_ERROR);
   }
 };
 

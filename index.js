@@ -24,7 +24,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, process.env.STATIC_PATH)));
 app.use("/graph", graphRouter);
-// app.use("/user", userRouter);
+app.use("/user", userRouter);
 app.listen(process.env.PORT, () =>
   console.log(`sever is listening to port ${process.env.PORT}`)
 );
