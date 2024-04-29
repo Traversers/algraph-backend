@@ -42,13 +42,17 @@ const objIsEdge = (obj, vertexIndex) => {
     if (!validFields.includes(fields[i])) return false;
   }
   const hasDestinationKey = fields.includes(GRAPH_FIELDS.DESTINATION);
-  const hasDestinationValue = obj[DESTINATION] !== null;
-  const isConnectedToSelf = obj[DESTINATION] === `${vertexIndex}`;
+  const hasDestinationValue = obj[GRAPH_FIELDS.DESTINATION] !== null;
+  const isConnectedToSelf = obj[GRAPH_FIELDS.DESTINATION] === `${vertexIndex}`;
 
   if (!hasDestinationKey || !hasDestinationValue || isConnectedToSelf)
     return false;
 
-  if (!fields.includes(WEIGHT) || isNaN(parseFloat(obj[WEIGHT]))) return false;
+  if (
+    !fields.includes(GRAPH_FIELDS.WEIGHT) ||
+    isNaN(parseFloat(obj[GRAPH_FIELDS.WEIGHT]))
+  )
+    return false;
 
   return true;
 };
@@ -64,6 +68,10 @@ const isValidGraph = (graph) => {
   return graph.every((nList, i) => isValidNhoodList(nList, graph.length, i));
 };
 
+const getPublicUserData = (dbUser) => {
+  return { name: dbUser.name, graphs: dbUser.graphs };
+};
+
 const respondWithStatus = (res, opType, payload) =>
   res.status(SUCCESS_CODES_MAP.get(opType)).send(payload);
 
@@ -77,6 +85,7 @@ module.exports = {
   compare,
   getRandString,
   isValidGraph,
+  getPublicUserData,
   respondWithError,
   respondWithStatus,
 };

@@ -15,7 +15,11 @@ const readAll = async () => {
 };
 
 const updateOne = async (name, payload) => {
-  const updatedUser = await User.findOneAndUpdate({ name }, { payload });
+  const updatedUser = await User.findOneAndUpdate(
+    { name },
+    { ...payload },
+    { new: true }
+  );
   return updatedUser;
 };
 
