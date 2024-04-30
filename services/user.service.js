@@ -29,7 +29,7 @@ const deleteOne = async (name) => {
   return deleteCount;
 };
 
-const isExistingUser = async (name) => {
+const isUserExists = async (name) => {
   return (await User.findOne({ name })) !== null;
 };
 
@@ -39,5 +39,5 @@ module.exports = {
   readAll,
   updateOne,
   deleteOne,
-  isExistingUser,
+  isUserExists,
 };

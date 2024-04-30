@@ -8,7 +8,7 @@ const {
 
 const EMAIL_REGEX =
   /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-const isValidEmailSyntax = (email_address) => EMAIL_REGEX.test(email_address);
+const isValidEmail = (email_address) => EMAIL_REGEX.test(email_address);
 
 const isValidPassword = (password) =>
   password.length > 8 &&
@@ -37,24 +37,21 @@ const validFields = [GRAPH_FIELDS.WEIGHT, GRAPH_FIELDS.DESTINATION];
 
 const objIsEdge = (obj, vertexIndex) => {
   const fields = Object.keys(obj);
-  if (fields.length != validFields.length) return false;
-  for (let i = 0; i < fields.length; i++) {
-    if (!validFields.includes(fields[i])) return false;
-  }
+  const isValidFieldsLength = fields.length == validFields.length;
+
   const hasDestinationKey = fields.includes(GRAPH_FIELDS.DESTINATION);
   const hasDestinationValue = obj[GRAPH_FIELDS.DESTINATION] !== null;
   const isConnectedToSelf = obj[GRAPH_FIELDS.DESTINATION] === `${vertexIndex}`;
 
-  if (!hasDestinationKey || !hasDestinationValue || isConnectedToSelf)
-    return false;
+  const isValidDestination =
+    hasDestinationKey && hasDestinationValue && !isConnectedToSelf;
 
-  if (
-    !fields.includes(GRAPH_FIELDS.WEIGHT) ||
-    isNaN(parseFloat(obj[GRAPH_FIELDS.WEIGHT]))
-  )
-    return false;
+  const hasWeightField = fields.includes(GRAPH_FIELDS.WEIGHT);
+  const isNumericWeight = !isNaN(parseFloat(obj[GRAPH_FIELDS.WEIGHT]));
 
-  return true;
+  const isValidWeight = hasWeightField && isNumericWeight;
+
+  return isValidFieldsLength && isValidWeight && isValidDestination;
 };
 
 const isValidNhoodList = (nList, verticesAmount, vertexIndex) => {
@@ -79,7 +76,7 @@ const respondWithError = (res, errorMsg) =>
   res.status(ERROR_CODES_MAP.get(errorMsg)).send({ error: errorMsg });
 
 module.exports = {
-  isValidEmailSyntax,
+  isValidEmail,
   isValidPassword,
   composite,
   compare,
