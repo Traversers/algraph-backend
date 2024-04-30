@@ -15,7 +15,11 @@ const readAll = async () => {
 };
 
 const updateOne = async (name, payload) => {
-  const updatedUser = await User.findOneAndUpdate({ name }, { payload });
+  const updatedUser = await User.findOneAndUpdate(
+    { name },
+    { ...payload },
+    { new: true }
+  );
   return updatedUser;
 };
 
@@ -25,7 +29,7 @@ const deleteOne = async (name) => {
   return deleteCount;
 };
 
-const isExistingUser = async (name) => {
+const isUserExists = async (name) => {
   return (await User.findOne({ name })) !== null;
 };
 
@@ -35,5 +39,5 @@ module.exports = {
   readAll,
   updateOne,
   deleteOne,
-  isExistingUser,
+  isUserExists,
 };
