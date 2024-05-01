@@ -29,8 +29,11 @@ const deleteOne = async (name) => {
   return deleteCount;
 };
 
-const isUserExists = async (name) => {
-  return (await User.findOne({ name })) !== null;
+const isUserExists = async (name, email) => {
+  return (
+    (await User.findOne({ name })) !== null ||
+    (await User.findOne({ email })) !== null
+  );
 };
 
 module.exports = {

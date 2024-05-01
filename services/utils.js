@@ -4,6 +4,7 @@ const {
   ERROR_CODES_MAP,
   SUCCESS_CODES_MAP,
   GRAPH_FIELDS,
+  ERRORS,
 } = require("../constants");
 
 const EMAIL_REGEX =
@@ -30,8 +31,6 @@ const compare = async (storedPassword, userSalt, input, peperRange) => {
   }
   return false;
 };
-
-const getRandString = () => `${Math.random()}${Date.now()}`;
 
 const validFields = [GRAPH_FIELDS.WEIGHT, GRAPH_FIELDS.DESTINATION];
 
@@ -72,15 +71,20 @@ const getPublicUserData = (dbUser) => {
 const respondWithStatus = (res, opType, payload) =>
   res.status(SUCCESS_CODES_MAP.get(opType)).send(payload);
 
-const respondWithError = (res, errorMsg) =>
-  res.status(ERROR_CODES_MAP.get(errorMsg)).send({ error: errorMsg });
+const respondWithError = (res, errorMsg) => {
+  if (!ERROR_CODES_MAP.get(errorMsg)) {
+    return res
+      .status(ERROR_CODES_MAP.get(ERRORS.INTERNAL_ERROR))
+      .send({ error: ERRORS.INTERNAL_ERROR });
+  }
+  return res.status(ERROR_CODES_MAP.get(errorMsg)).send({ error: errorMsg });
+};
 
 module.exports = {
   isValidEmail,
   isValidPassword,
   composite,
   compare,
-  getRandString,
   isValidGraph,
   getPublicUserData,
   respondWithError,

@@ -5,7 +5,6 @@ const {
   isValidPassword,
   composite,
   compare,
-  getRandString,
   getPublicUserData,
   respondWithError,
   respondWithStatus,
@@ -18,18 +17,20 @@ const { SERCURITY, ERRORS, CRUD_OPS } = require("../constants");
 const register = async (req, res) => {
   try {
     const { name, email, password } = req.body;
+
+    if (await userService.isUserExists(name, email)) {
+      throw new Error(ERRORS.NAME_OR_EMAIL_ERROR);
+    }
+
     if (!isValidEmail(email)) {
       throw new Error(ERRORS.INVALID_EMAIL_ADDRESS);
     }
     if (!isValidPassword(password)) {
       throw new Error(ERRORS.INVALID_PASSWORD);
     }
-    if (await userService.isUserExists(name)) {
-      throw new Error(ERRORS.NAME_OR_EMAIL_ERROR);
-    }
 
     const pepper = parseInt(Math.random() * SERCURITY.PEPPER_RANGE);
-    const userSalt = await bcrypt.hash(getRandString(), SERCURITY.SALT_ROUNDS);
+    const userSalt = await bcrypt.genSalt(SERCURITY.SALT_ROUNDS);
     const hashedPassword = await bcrypt.hash(
       composite(password, userSalt, pepper),
       SERCURITY.SALT_ROUNDS
@@ -49,7 +50,7 @@ const register = async (req, res) => {
     }
     return respondWithStatus(res, CRUD_OPS.CREATED, getPublicUserData(newUser));
   } catch (err) {
-    return respondWithError(res, err || ERRORS.INTERNAL_ERROR);
+    return respondWithError(res, err.message);
   }
 };
 
@@ -71,7 +72,7 @@ const login = async (req, res) => {
     }
     return respondWithStatus(res, CRUD_OPS.READ_ONE, getPublicUserData(user));
   } catch (err) {
-    return respondWithError(res, err || ERRORS.INTERNAL_ERROR);
+    return respondWithError(res, err.message);
   }
 };
 
@@ -81,7 +82,7 @@ const updateUser = async (req, res) => {
     const updatedUser = await userService.updateOne(name, payload);
     return respondWithStatus(res, CRUD_OPS.UPDATED, updatedUser);
   } catch (err) {
-    return respondWithError(res, err || ERRORS.INTERNAL_ERROR);
+    return respondWithError(res, err.message);
   }
 };
 
@@ -89,7 +90,7 @@ const getAllUsers = async (req, res) => {
   try {
     await userService.readAll();
   } catch (err) {
-    return respondWithError(res, err || ERRORS.INTERNAL_ERROR);
+    return respondWithError(res, err.message);
   }
 };
 
@@ -99,7 +100,7 @@ const deleteUser = async (req, res) => {
     const dbRes = await userService.deleteOne(name);
     res.send({ msg: `Removed user ${name}` });
   } catch (err) {
-    return respondWithError(res, err || ERRORS.INTERNAL_ERROR);
+    return respondWithError(res, err.message);
   }
 };
 
