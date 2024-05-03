@@ -28,11 +28,27 @@ const compare = async (storedPassword, userSalt, input, peperRange) => {
   return false;
 };
 
+const validateList = (items, getKey) => {
+  const itemMap = new Map();
+  for (const item of items) {
+    const key = getKey(item);
+    if (itemMap.has(key)) {
+      throw new Error(`Duplicate item found: ${key}`);
+    } else {
+      itemMap.set(key, true);
+    }
+  }
+};
+
+const edgeKeyMapper = (edge) => `${edge.src}-${edge.dest}`;
+const vertexKeyMapper = (vertex) => `${vertex.id}`;
+
 const isValidGraph = async (graphData) => {
   try {
+    validateList(graphData.vertices, vertexKeyMapper);
+    validateList(graphData.edges, edgeKeyMapper);
     return await Graph.validate(graphData, { abortEarly: false });
   } catch (err) {
-    console.error(err);
     throw new Error(ERRORS.INVALID_GRAPH);
   }
 };

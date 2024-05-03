@@ -7,39 +7,14 @@ const {
   respondWithStatus,
 } = require("../services/utils");
 
-const getMappings = (vertices) => {
-  const backToFront = new Map();
-  const frontToBack = new Map();
-  vertices.forEach((vertex) => {
-    backToFront.set(vertex._id, vertex.id);
-    frontToBack.set(vertex.id, vertex._id);
-  });
-  return { backToFront, frontToBack };
-};
-
 const publishGraph = async (req, res) => {
   try {
     const { graphData } = req.body;
-    await isValidGraph({ graphData, edges: [] });
-    const newGraph = await graphService.createGraph({
-      ...graphData,
-      edges: [],
-    });
-    const { edges } = graphData;
-    const mappings = getMappings(newGraph.vertices);
-    const mappedEdges = edges.map((edge) => {
-      return {
-        ...edge,
-        _src: mappings.frontToBack.get(edge.src),
-        _dest: mappings.frontToBack.get(edge.dest),
-      };
-    });
-    await isValidGraph({ graphData, edge: mappedEdges });
-    newGraph.edges = mappedEdges;
+    await isValidGraph({ ...graphData });
+    const newGraph = await graphService.createGraph({ ...graphData });
     await newGraph.save();
     return respondWithStatus(res, CRUD_OPS.CREATED, newGraph);
   } catch (err) {
-    console.error(err.message);
     return respondWithError(res, err.message);
   }
 };
@@ -69,8 +44,8 @@ const getAllGraphs = async (req, res) => {
 
 const updateGraph = async (req, res) => {
   try {
-    const { graphData } = req.body;
-    await isValidGraph({ graphData });
+    const { graphData, id } = req.body;
+    await isValidGraph({ ...graphData });
     const updatedGraph = await graphService.updateGraph(id, graphData);
     return respondWithStatus(res, CRUD_OPS.UPDATED, updatedGraph);
   } catch (err) {

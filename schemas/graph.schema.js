@@ -34,14 +34,6 @@ const Vertex = new Schema({
 const Edge = new Schema({
   src: String,
   dest: String,
-  _src: {
-    type: Schema.Types.ObjectId,
-    ref: "Vertex",
-  },
-  _dest: {
-    type: Schema.Types.ObjectId,
-    ref: "Vertex",
-  },
   weight: {
     type: Number,
     default: 1,
