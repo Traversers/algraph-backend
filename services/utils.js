@@ -45,11 +45,12 @@ const vertexKeyMapper = (vertex) => `${vertex.id}`;
 
 const isValidGraph = async (graphData) => {
   try {
+    if (!graphData.vertices) throw new Error(ERRORS.EMPTY_GRAPH);
     validateList(graphData.vertices, vertexKeyMapper);
-    validateList(graphData.edges, edgeKeyMapper);
+    if (graphData.edges) validateList(graphData.edges, edgeKeyMapper);
     return await Graph.validate(graphData, { abortEarly: false });
   } catch (err) {
-    throw new Error(ERRORS.INVALID_GRAPH);
+    throw new Error(err.message || ERRORS.INVALID_GRAPH);
   }
 };
 
