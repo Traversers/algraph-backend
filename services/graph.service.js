@@ -1,8 +1,8 @@
 const Graph = require("../schemas/graph.schema");
 const { ERRORS } = require("../constants");
 
-const createGraph = async ({ adjacencyLists, userId }) => {
-  const newGraph = await Graph.create({ adjacencyLists, userId });
+const createGraph = async (graphData) => {
+  const newGraph = await Graph.create({ ...graphData });
   await newGraph.save();
   return newGraph;
 };
@@ -15,11 +15,13 @@ const readAll = async () => {
   return await Graph.find({});
 };
 
-const updateGraph = async (graphId, updatedAdjacencyLists) => {
+const updateGraph = async (graphId, graphData) => {
   try {
-    const graphToUpdate = await Graph.findById(graphId);
-    graphToUpdate.adjacencyLists = updatedAdjacencyLists;
-    return await graphToUpdate.save();
+    return await Graph.findByIdAndUpdate(
+      graphId,
+      { ...graphData },
+      { new: true }
+    );
   } catch (err) {
     console.log(err);
     return { error: ERRORS.INTERNAL_ERROR };
