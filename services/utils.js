@@ -30,13 +30,11 @@ const compare = async (storedPassword, userSalt, input, peperRange) => {
 
 const validateList = (items, getKey) => {
   const itemMap = new Map();
+  let key;
   for (const item of items) {
-    const key = getKey(item);
-    if (itemMap.has(key)) {
-      throw new Error(`Duplicate item found: ${key}`);
-    } else {
-      itemMap.set(key, true);
-    }
+    key = getKey(item);
+    if (itemMap.has(key)) throw new Error(`Duplicate item found: ${key}`);
+    itemMap.set(key, true);
   }
 };
 
