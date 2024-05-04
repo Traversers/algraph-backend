@@ -10,8 +10,8 @@ const {
 const publishGraph = async (req, res) => {
   try {
     const { graphData } = req.body;
-    await isValidGraph({ ...graphData });
-    const newGraph = await graphService.createGraph({ ...graphData });
+    await isValidGraph(graphData);
+    const newGraph = await graphService.createGraph(graphData);
     await newGraph.save();
     return respondWithStatus(res, CRUD_OPS.CREATED, newGraph);
   } catch (err) {
@@ -45,7 +45,7 @@ const getAllGraphs = async (req, res) => {
 const updateGraph = async (req, res) => {
   try {
     const { graphData, id } = req.body;
-    await isValidGraph({ ...graphData });
+    await isValidGraph(graphData);
     const updatedGraph = await graphService.updateGraph(id, graphData);
     return respondWithStatus(res, CRUD_OPS.UPDATED, updatedGraph);
   } catch (err) {
