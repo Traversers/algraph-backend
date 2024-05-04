@@ -1,5 +1,6 @@
 const Graph = require("../schemas/graph.schema");
 const { ERRORS } = require("../constants");
+const algorithms = require("./algorithms.service");
 
 const createGraph = async (graphData) => {
   const newGraph = await Graph.create(graphData);
@@ -8,7 +9,12 @@ const createGraph = async (graphData) => {
 };
 
 const readGraph = async (graphId) => {
-  return await Graph.findById(graphId);
+  return await Graph.findById(graphId).lean();
+};
+
+const runAlgo = async (graphId, algoName, src = "1") => {
+  const graph = await readGraph(graphId);
+  return algorithms.BFS(graph, src);
 };
 
 const readAll = async () => {
@@ -23,7 +29,6 @@ const updateGraph = async (graphId, graphData) => {
       { new: true }
     );
   } catch (err) {
-    console.log(err);
     return { error: ERRORS.INTERNAL_ERROR };
   }
 };
@@ -40,4 +45,5 @@ module.exports = {
   readAll,
   updateGraph,
   deleteGraph,
+  runAlgo,
 };

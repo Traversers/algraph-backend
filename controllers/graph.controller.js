@@ -1,5 +1,5 @@
 const graphService = require("../services/graph.service");
-const { ERRORS, CRUD_OPS } = require("../constants");
+const { ERRORS, CRUD_OPS, SUPPORTED_ALGORITHMS } = require("../constants");
 
 const {
   isValidGraph,
@@ -63,10 +63,23 @@ const deleteGraph = async (req, res) => {
   }
 };
 
+const runAlgorithm = async (req, res) => {
+  try {
+    const { graphId, algoName, src } = req.body;
+    const isSupportedAlgo = SUPPORTED_ALGORITHMS[algoName] != null;
+    if (!isSupportedAlgo) throw new Error(ERRORS.UNSUPPORTED_ALGORITHM);
+    const steps = await graphService.runAlgo(graphId, algoName, src);
+    return respondWithStatus(res, CRUD_OPS.UPDATED, steps);
+  } catch (err) {
+    return respondWithError(res, err.message);
+  }
+};
+
 module.exports = {
   publishGraph,
   getGraphById,
   getAllGraphs,
   updateGraph,
   deleteGraph,
+  runAlgorithm,
 };

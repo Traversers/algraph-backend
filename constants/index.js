@@ -16,12 +16,14 @@ const ERRORS = {
   INVALID_PASSWORD: "Invalid Password!",
   INVALID_EMAIL_ADDRESS: "Invalid Email Address!",
   EMPTY_GRAPH: "Can't create empty graphs, at least 1 vertex is required.",
+  UNSUPPORTED_ALGORITHM: "Unsupported algorithm request",
 };
 
 const ERROR_CODES_MAP = new Map([
   [ERRORS.GRAPH_NOT_FOUND, 404],
   [ERRORS.INVALID_GRAPH, 400],
   [ERRORS.EMPTY_GRAPH, 400],
+  [ERRORS.UNSUPPORTED_ALGORITHM, 400],
   [ERRORS.INTERNAL_ERROR, 500],
   [ERRORS.WRONG_EMAIL_OR_PASSSWORD, 401],
   [ERRORS.NAME_OR_EMAIL_ERROR, 422],
@@ -47,6 +49,10 @@ const SUCCESS_CODES_MAP = new Map([
 
 const GRAPH_FIELDS = { WEIGHT: "weight", DESTINATION: "destination" };
 
+const COLORS = { BLACK: "black", GREY: "grey", WHITE: "white" };
+
+const SUPPORTED_ALGORITHMS = { BFS: "BFS" };
+
 module.exports = {
   AVATAR_GUEST,
   SERCURITY,
@@ -56,4 +62,6 @@ module.exports = {
   CRUD_OPS,
   SUCCESS_CODES_MAP,
   GRAPH_FIELDS,
+  COLORS,
+  SUPPORTED_ALGORITHMS,
 };
