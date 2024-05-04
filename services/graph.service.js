@@ -2,7 +2,7 @@ const Graph = require("../schemas/graph.schema");
 const { ERRORS } = require("../constants");
 
 const createGraph = async (graphData) => {
-  const newGraph = await Graph.create({ ...graphData });
+  const newGraph = await Graph.create(graphData);
   await newGraph.save();
   return newGraph;
 };
