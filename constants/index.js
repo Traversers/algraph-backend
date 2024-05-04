@@ -15,11 +15,13 @@ const ERRORS = {
   NAME_OR_EMAIL_ERROR: "Invalid Name or Email!",
   INVALID_PASSWORD: "Invalid Password!",
   INVALID_EMAIL_ADDRESS: "Invalid Email Address!",
+  EMPTY_GRAPH: "Can't create empty graphs, at least 1 vertex is required.",
 };
 
 const ERROR_CODES_MAP = new Map([
   [ERRORS.GRAPH_NOT_FOUND, 404],
   [ERRORS.INVALID_GRAPH, 400],
+  [ERRORS.EMPTY_GRAPH, 400],
   [ERRORS.INTERNAL_ERROR, 500],
   [ERRORS.WRONG_EMAIL_OR_PASSSWORD, 401],
   [ERRORS.NAME_OR_EMAIL_ERROR, 422],

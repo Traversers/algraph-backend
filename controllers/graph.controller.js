@@ -9,17 +9,13 @@ const {
 
 const publishGraph = async (req, res) => {
   try {
-    const { adjacencyLists, userId } = req.body;
-    if (!isValidGraph(adjacencyLists)) {
-      return respondWithError(res, ERRORS.INVALID_GRAPH);
-    }
-    const newGraph = await graphService.createGraph({
-      adjacencyLists,
-      userId,
-    });
+    const { graphData } = req.body;
+    await isValidGraph(graphData);
+    const newGraph = await graphService.createGraph(graphData);
+    await newGraph.save();
     return respondWithStatus(res, CRUD_OPS.CREATED, newGraph);
   } catch (err) {
-    return respondWithError(res, ERRORS.INTERNAL_ERROR);
+    return respondWithError(res, err.message);
   }
 };
 
@@ -48,11 +44,9 @@ const getAllGraphs = async (req, res) => {
 
 const updateGraph = async (req, res) => {
   try {
-    const { id, adjacencyLists } = req.body;
-    if (!isValidGraph(adjacencyLists)) {
-      return respondWithError(res, ERRORS.INVALID_GRAPH);
-    }
-    const updatedGraph = await graphService.updateGraph(id, adjacencyLists);
+    const { graphData, id } = req.body;
+    await isValidGraph(graphData);
+    const updatedGraph = await graphService.updateGraph(id, graphData);
     return respondWithStatus(res, CRUD_OPS.UPDATED, updatedGraph);
   } catch (err) {
     return respondWithError(res, ERRORS.INTERNAL_ERROR);
