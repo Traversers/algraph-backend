@@ -1,6 +1,7 @@
 const { COLORS } = require("../constants");
 
-const BFS = (graph, srcId = "1") => {
+const BFS = (DBgraph, srcId = "1") => {
+  const graph = structuredClone(DBgraph);
   graph.vertices.forEach((vert) => (vert.color = COLORS.WHITE));
   const s = graph.vertices.find((vert) => vert.id == srcId);
   s.color = COLORS.GREY;
@@ -14,11 +15,12 @@ const BFS = (graph, srcId = "1") => {
       if (n.color == COLORS.WHITE) {
         n.color = COLORS.GREY;
         n.distance = u.distance + 1;
-        n.PI = u;
+        n.PI = u.id;
         Q.push(n);
         steps.push(structuredClone(graph.vertices));
       }
     });
+    u.color = COLORS.BLACK;
   }
   return steps;
 };
