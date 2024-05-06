@@ -26,6 +26,7 @@ app.use('/graph', graphRouter);
 app.use('/auth', userRouter);
 
 mongoose.connect(process.env.MONGOOSE_CONNECTION_STRING).then(() => {
+  console.log('connected to database');
   app.listen(process.env.PORT, () => {
     console.log(`sever is listening to port ${process.env.PORT}`);
   });

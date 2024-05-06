@@ -1,5 +1,5 @@
-const User = require("../schemas/user.schema");
-
+const User = require('../schemas/user.schema');
+const jwt = require('jsonwebtoken');
 const createOne = async ({ name, email, password, salt }) => {
   const newUser = await User.create({ name, email, password, salt });
   await newUser.save();
@@ -36,6 +36,14 @@ const isUserExists = async (name, email) => {
   );
 };
 
+const generateTokens = async (user) => {
+  const accessToken = jwt.sign({ user }, process.env.TOKEN_SECRET, {
+    expiresIn: '3d',
+  });
+  const refreshToken = jwt.sign({ user }, process.env.TOKEN_SECRET);
+  return { accessToken, refreshToken };
+};
+
 module.exports = {
   createOne,
   readOne,
@@ -43,4 +51,5 @@ module.exports = {
   updateOne,
   deleteOne,
   isUserExists,
+  generateTokens,
 };

@@ -1,4 +1,5 @@
-const userService = require("../services/user.service");
+const { HttpStatusCode } = require('axios');
+const userService = require('../services/user.service');
 
 const {
   isValidEmail,
@@ -8,25 +9,25 @@ const {
   getPublicUserData,
   respondWithError,
   respondWithStatus,
-} = require("../services/utils");
+} = require('../services/utils');
 
-const bcrypt = require("bcrypt");
+const bcrypt = require('bcrypt');
 
-const { SERCURITY, ERRORS, CRUD_OPS } = require("../constants");
+const { SERCURITY, ERRORS, CRUD_OPS } = require('../constants');
 
 const register = async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
     if (await userService.isUserExists(name, email)) {
-      throw new Error(ERRORS.NAME_OR_EMAIL_ERROR);
+      throw new Error(HttpStatusCode.BadRequest);
     }
 
     if (!isValidEmail(email)) {
-      throw new Error(ERRORS.INVALID_EMAIL_ADDRESS);
+      throw new Error(HttpStatusCode.BadRequest);
     }
     if (!isValidPassword(password)) {
-      throw new Error(ERRORS.INVALID_PASSWORD);
+      throw new Error(HttpStatusCode.BadRequest);
     }
 
     const pepper = parseInt(Math.random() * SERCURITY.PEPPER_RANGE);
@@ -36,7 +37,7 @@ const register = async (req, res) => {
       SERCURITY.SALT_ROUNDS
     );
     if (!hashedPassword) {
-      throw new Error(ERRORS.INTERNAL_ERROR);
+      throw new Error(HttpStatusCode.InternalServerError);
     }
 
     const newUser = await userService.createOne({
@@ -50,7 +51,8 @@ const register = async (req, res) => {
     }
     return respondWithStatus(res, CRUD_OPS.CREATED, getPublicUserData(newUser));
   } catch (err) {
-    return respondWithError(res, err.message);
+    console.log('error creating user', err.message);
+    throw new Error(`failed to create user: ${err.message}`);
   }
 };
 
@@ -59,7 +61,9 @@ const login = async (req, res) => {
     const { name, password } = req.body;
     const user = await userService.readOne(name);
     if (!user) {
-      throw new Error(ERRORS.NAME_OR_EMAIL_ERROR);
+      return res
+        .status(HttpStatusCode.Unauthorized)
+        .send(ERRORS.WRONG_EMAIL_OR_PASSSWORD);
     }
     const authenticated = await compare(
       user.password,
@@ -68,11 +72,27 @@ const login = async (req, res) => {
       SERCURITY.PEPPER_RANGE
     );
     if (!authenticated) {
-      throw new Error(ERRORS.WRONG_EMAIL_OR_PASSSWORD);
+      return res
+        .status(HttpStatusCode.Unauthorized)
+        .send(ERRORS.WRONG_EMAIL_OR_PASSSWORD);
     }
-    return respondWithStatus(res, CRUD_OPS.READ_ONE, getPublicUserData(user));
-  } catch (err) {
-    return respondWithError(res, err.message);
+    const tokens = await userService.generateTokens(user);
+    if (!tokens) {
+      res
+        .status(HttpStatusCode.InternalServerError)
+        .send('failed to generate tokens');
+    }
+    return res.status(HttpStatusCode.Ok).send(tokens);
+  } catch (error) {
+    console.log('error logging in', error.message);
+    if (error.response?.status === HttpStatusCode.Unauthorized) {
+      return res
+        .status(HttpStatusCode.Unauthorized)
+        .send(ERRORS.WRONG_EMAIL_OR_PASSSWORD);
+    }
+    return res
+      .status(HttpStatusCode.InternalServerError)
+      .send(`failed to login: ${error.message}`);
   }
 };
 
