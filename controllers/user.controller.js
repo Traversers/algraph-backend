@@ -1,5 +1,6 @@
 const { HttpStatusCode } = require('axios');
 const userService = require('../services/user.service');
+const User = require('../schemas/user.schema');
 
 const {
   isValidEmail,
@@ -55,24 +56,30 @@ const register = async (req, res) => {
 const login = async (req, res) => {
   try {
     const { name, password } = req.body;
-    const tokens = await userService.generateTokens(name, password);
+    if (name === undefined || password === undefined) {
+      return res
+        .status(HttpStatusCode.BadRequest)
+        .send(ERRORS.NAME_OR_PASSWORD_ERROR);
+    }
+    const user = await User.findOne({ name: name });
+    if (user == null) {
+      return res.status(HttpStatusCode.BadRequest).send(ERRORS.USER_NOT_FOUND);
+    }
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      res.status(HttpStatusCode.BadRequest).send(ERRORS.INVALID_CREDENTIALS);
+    }
+
+    const tokens = await userService.generateTokens(user);
+    if (tokens == null) {
+      return res
+        .status(HttpStatusCode.InternalServerError)
+        .send(ERRORS.GENERETING_TOKENS_ERROR);
+    }
+    console.log('tokens', tokens);
     return res.status(HttpStatusCode.Ok).json(tokens);
   } catch (err) {
-    if (err.message === ERRORS.WRONG_EMAIL_OR_PASSSWORD) {
-      return res
-        .status(HttpStatusCode.Unauthorized)
-        .send(ERRORS.WRONG_EMAIL_OR_PASSSWORD);
-    }
-    if (err.message === ERRORS.INVALID_PASSWORD) {
-      return res
-        .status(HttpStatusCode.Unauthorized)
-        .send(ERRORS.INVALID_PASSWORD);
-    }
-    if (err.message === ERRORS.USER_NOT_FOUND) {
-      return res
-        .status(HttpStatusCode.Unauthorized)
-        .send(ERRORS.USER_NOT_FOUND);
-    }
+    console.log('error logging in', err);
     return res.status(HttpStatusCode.InternalServerError).send(err.message);
   }
 };

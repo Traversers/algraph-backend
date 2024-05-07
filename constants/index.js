@@ -13,10 +13,13 @@ const ERRORS = {
   INTERNAL_ERROR: 'Internal error occurred',
   WRONG_EMAIL_OR_PASSSWORD: 'Wrong Email or Password!',
   NAME_OR_EMAIL_ERROR: 'Invalid Name or Email!',
-  INVALID_PASSWORD: 'Invalid Password!',
-  INVALID_EMAIL_ADDRESS: 'Invalid Email Address!',
+  INVALID_PASSWORD: 'Invalid credentials!',
+  INVALID_EMAIL_ADDRESS: 'Invalid credentials!',
+  INVALID_CREDENTIALS: 'Invalid credentials!',
   EMPTY_GRAPH: "Can't create empty graphs, at least 1 vertex is required.",
   USER_NOT_FOUND: 'User not found!',
+  NAME_OR_PASSWORD_ERROR: 'Email and password are required',
+  GENERETING_TOKENS_ERROR: 'Error generating tokens',
 };
 
 const ERROR_CODES_MAP = new Map([
