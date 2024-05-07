@@ -59,11 +59,13 @@ const login = async (req, res) => {
     if (name === undefined || password === undefined) {
       return res
         .status(HttpStatusCode.BadRequest)
-        .send(ERRORS.NAME_OR_PASSWORD_ERROR);
+        .send(ERRORS.INVALID_CREDENTIALS);
     }
     const user = await User.findOne({ name: name });
     if (user == null) {
-      return res.status(HttpStatusCode.BadRequest).send(ERRORS.USER_NOT_FOUND);
+      return res
+        .status(HttpStatusCode.Unauthorized)
+        .send(ERRORS.INVALID_CREDENTIALS);
     }
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
