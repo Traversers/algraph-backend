@@ -20,79 +20,60 @@ const register = async (req, res) => {
     const { name, email, password } = req.body;
 
     if (await userService.isUserExists(name, email)) {
-      throw new Error(HttpStatusCode.BadRequest);
+      return res.status(HttpStatusCode.Conflict).send('user already exists');
     }
-
-    if (!isValidEmail(email)) {
-      throw new Error(HttpStatusCode.BadRequest);
-    }
-    if (!isValidPassword(password)) {
-      throw new Error(HttpStatusCode.BadRequest);
-    }
-
-    const pepper = parseInt(Math.random() * SERCURITY.PEPPER_RANGE);
     const userSalt = await bcrypt.genSalt(SERCURITY.SALT_ROUNDS);
-    const hashedPassword = await bcrypt.hash(
-      composite(password, userSalt, pepper),
-      SERCURITY.SALT_ROUNDS
-    );
+    const hashedPassword = await bcrypt.hash(password, userSalt);
     if (!hashedPassword) {
       throw new Error(HttpStatusCode.InternalServerError);
     }
-
     const newUser = await userService.createOne({
       name,
       email,
       password: hashedPassword,
-      salt: userSalt,
     });
     if (!newUser) {
-      throw new Error(ERRORS.INTERNAL_ERROR);
+      return res.status(HttpStatusCode.InternalServerError).send();
     }
-    return respondWithStatus(res, CRUD_OPS.CREATED, getPublicUserData(newUser));
+    return res.status(HttpStatusCode.Created).send(newUser);
   } catch (err) {
-    console.log('error creating user', err.message);
-    throw new Error(`failed to create user: ${err.message}`);
+    console.log('error registering', err);
+    if (err.message === HttpStatusCode.BadRequest) {
+      return res
+        .status(HttpStatusCode.BadRequest)
+        .send(ERRORS.NAME_OR_EMAIL_ERROR);
+    }
+    if (err.message === HttpStatusCode.InternalServerError) {
+      return res
+        .status(HttpStatusCode.InternalServerError)
+        .send(ERRORS.INTERNAL_ERROR);
+    }
+    return res.status(HttpStatusCode.InternalServerError).send(err.message);
   }
 };
 
 const login = async (req, res) => {
   try {
     const { name, password } = req.body;
-    const user = await userService.readOne(name);
-    if (!user) {
+    const tokens = await userService.generateTokens(name, password);
+    return res.status(HttpStatusCode.Ok).json(tokens);
+  } catch (err) {
+    if (err.message === ERRORS.WRONG_EMAIL_OR_PASSSWORD) {
       return res
         .status(HttpStatusCode.Unauthorized)
         .send(ERRORS.WRONG_EMAIL_OR_PASSSWORD);
     }
-    const authenticated = await compare(
-      user.password,
-      user.salt,
-      password,
-      SERCURITY.PEPPER_RANGE
-    );
-    if (!authenticated) {
+    if (err.message === ERRORS.INVALID_PASSWORD) {
       return res
         .status(HttpStatusCode.Unauthorized)
-        .send(ERRORS.WRONG_EMAIL_OR_PASSSWORD);
+        .send(ERRORS.INVALID_PASSWORD);
     }
-    const tokens = await userService.generateTokens(user);
-    if (!tokens) {
-      res
-        .status(HttpStatusCode.InternalServerError)
-        .send('failed to generate tokens');
-    }
-    return res.status(HttpStatusCode.Ok).send(tokens);
-  } catch (error) {
-    console.log('error logging in', error.message);
-    if (error.response?.status === HttpStatusCode.Unauthorized) {
+    if (err.message === ERRORS.USER_NOT_FOUND) {
       return res
         .status(HttpStatusCode.Unauthorized)
-        .send(ERRORS.WRONG_EMAIL_OR_PASSSWORD);
+        .send(ERRORS.USER_NOT_FOUND);
     }
-    return res
-      .status(HttpStatusCode.InternalServerError)
-      .send(`failed to login: ${error.message}`);
+    return res.status(HttpStatusCode.InternalServerError).send(err.message);
   }
 };
 

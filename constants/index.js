@@ -1,6 +1,6 @@
-const AVATAR_GUEST = "guest";
+const AVATAR_GUEST = 'guest';
 
-const DEFAULT_USER_NAME = "system";
+const DEFAULT_USER_NAME = 'system';
 
 const SERCURITY = {
   SALT_ROUNDS: parseInt(process.env.SALT_ROUNDS) || 12,
@@ -8,14 +8,15 @@ const SERCURITY = {
 };
 
 const ERRORS = {
-  GRAPH_NOT_FOUND: "Graph not found!",
-  INVALID_GRAPH: "Invalid graph format!",
-  INTERNAL_ERROR: "Internal error occurred",
-  WRONG_EMAIL_OR_PASSSWORD: "Wrong Email or Password!",
-  NAME_OR_EMAIL_ERROR: "Invalid Name or Email!",
-  INVALID_PASSWORD: "Invalid Password!",
-  INVALID_EMAIL_ADDRESS: "Invalid Email Address!",
+  GRAPH_NOT_FOUND: 'Graph not found!',
+  INVALID_GRAPH: 'Invalid graph format!',
+  INTERNAL_ERROR: 'Internal error occurred',
+  WRONG_EMAIL_OR_PASSSWORD: 'Wrong Email or Password!',
+  NAME_OR_EMAIL_ERROR: 'Invalid Name or Email!',
+  INVALID_PASSWORD: 'Invalid Password!',
+  INVALID_EMAIL_ADDRESS: 'Invalid Email Address!',
   EMPTY_GRAPH: "Can't create empty graphs, at least 1 vertex is required.",
+  USER_NOT_FOUND: 'User not found!',
 };
 
 const ERROR_CODES_MAP = new Map([
@@ -30,11 +31,11 @@ const ERROR_CODES_MAP = new Map([
 ]);
 
 const CRUD_OPS = {
-  CREATED: "Create",
-  READ_ONE: "Read One",
-  READ_MANY: "Read Many",
-  UPDATED: "Update",
-  DELETED: "Delete",
+  CREATED: 'Create',
+  READ_ONE: 'Read One',
+  READ_MANY: 'Read Many',
+  UPDATED: 'Update',
+  DELETED: 'Delete',
 };
 
 const SUCCESS_CODES_MAP = new Map([
@@ -45,7 +46,7 @@ const SUCCESS_CODES_MAP = new Map([
   [CRUD_OPS.DELETED, 204],
 ]);
 
-const GRAPH_FIELDS = { WEIGHT: "weight", DESTINATION: "destination" };
+const GRAPH_FIELDS = { WEIGHT: 'weight', DESTINATION: 'destination' };
 
 module.exports = {
   AVATAR_GUEST,
