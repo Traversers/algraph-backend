@@ -1,7 +1,11 @@
-const User = require("../schemas/user.schema");
-
-const createOne = async ({ name, email, password, salt }) => {
-  const newUser = await User.create({ name, email, password, salt });
+const User = require('../schemas/user.schema');
+const jwt = require('jsonwebtoken');
+const { compare } = require('./utils');
+require('dotenv').config();
+const bcrypt = require('bcrypt');
+const { ERRORS, TOKEN_EXPIRATION } = require('../constants');
+const createOne = async ({ name, email, password }) => {
+  const newUser = await User.create({ name, email, password });
   await newUser.save();
   return newUser;
 };
@@ -36,6 +40,31 @@ const isUserExists = async (name, email) => {
   );
 };
 
+const generateTokens = async (user) => {
+  const accessToken = jwt.sign({ _id: user._id }, process.env.TOKEN_SECRET, {
+    expiresIn: TOKEN_EXPIRATION,
+  });
+  const random = Math.floor(Math.random() * 1000000).toString();
+  const refreshToken = jwt.sign(
+    { _id: user._id, random: random },
+    process.env.TOKEN_SECRET,
+    {}
+  );
+  if (user.tokens == null) {
+    user.tokens = [];
+  }
+  user.tokens.push(refreshToken);
+  try {
+    await user.save();
+    return {
+      accessToken: accessToken,
+      refreshToken: refreshToken,
+    };
+  } catch (err) {
+    return null;
+  }
+};
+
 module.exports = {
   createOne,
   readOne,
@@ -43,4 +72,5 @@ module.exports = {
   updateOne,
   deleteOne,
   isUserExists,
+  generateTokens,
 };
