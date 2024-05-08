@@ -1,6 +1,6 @@
 const { HttpStatusCode } = require('axios');
 const userService = require('../services/user.service');
-const User = require('../schemas/user.schema');
+const { readOne } = require('../services/user.service');
 
 const {
   isValidEmail,
@@ -38,7 +38,6 @@ const register = async (req, res) => {
     }
     return res.status(HttpStatusCode.Created).send(newUser);
   } catch (err) {
-    console.log('error registering', err);
     if (err.message === HttpStatusCode.BadRequest) {
       return res
         .status(HttpStatusCode.BadRequest)
@@ -61,7 +60,7 @@ const login = async (req, res) => {
         .status(HttpStatusCode.BadRequest)
         .send(ERRORS.INVALID_CREDENTIALS);
     }
-    const user = await User.findOne({ name: name });
+    const user = await readOne(name);
     if (user == null) {
       return res
         .status(HttpStatusCode.Unauthorized)

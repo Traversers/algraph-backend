@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const { compare } = require('./utils');
 require('dotenv').config();
 const bcrypt = require('bcrypt');
-const { ERRORS } = require('../constants');
+const { ERRORS, TOKEN_EXPIRATION } = require('../constants');
 const createOne = async ({ name, email, password }) => {
   const newUser = await User.create({ name, email, password });
   await newUser.save();
@@ -42,7 +42,7 @@ const isUserExists = async (name, email) => {
 
 const generateTokens = async (user) => {
   const accessToken = jwt.sign({ _id: user._id }, process.env.TOKEN_SECRET, {
-    expiresIn: 100000,
+    expiresIn: TOKEN_EXPIRATION,
   });
   const random = Math.floor(Math.random() * 1000000).toString();
   const refreshToken = jwt.sign(

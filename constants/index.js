@@ -51,6 +51,8 @@ const SUCCESS_CODES_MAP = new Map([
 
 const GRAPH_FIELDS = { WEIGHT: 'weight', DESTINATION: 'destination' };
 
+const TOKEN_EXPIRATION = 100000;
+
 module.exports = {
   AVATAR_GUEST,
   SERCURITY,
@@ -60,4 +62,5 @@ module.exports = {
   CRUD_OPS,
   SUCCESS_CODES_MAP,
   GRAPH_FIELDS,
+  TOKEN_EXPIRATION,
 };
