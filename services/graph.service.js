@@ -1,6 +1,7 @@
 const Graph = require("../schemas/graph.schema");
 const { ERRORS } = require("../constants");
 const algorithms = require("./algorithms.service");
+const { clearData } = require("./utils");
 
 const createGraph = async (graphData) => {
   const newGraph = await Graph.create(graphData);
@@ -9,7 +10,9 @@ const createGraph = async (graphData) => {
 };
 
 const readGraph = async (graphId) => {
-  return await Graph.findById(graphId).lean();
+  const graph = await Graph.findById(graphId).lean();
+  clearData(graph);
+  return graph;
 };
 
 const runAlgo = async (graphId, algoName, src = "1") => {
