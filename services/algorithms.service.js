@@ -2,31 +2,32 @@ const { COLORS, ERRORS } = require("../constants");
 
 const BFS = (graph, srcId = "1") => {
   initializeVertices(graph);
-  const s = graph.vertices.find((vert) => vert.id == srcId);
-  s.color = COLORS.GREY;
-  s.distance = 0;
+  const source = graph.vertices.find((vert) => vert.id == srcId);
+  source.color = COLORS.GREY;
+  source.distance = 0;
   const steps = [structuredClone(graph)];
-  const Q = [s];
+  const Q = [source];
   while (Q.length) {
-    const u = Q.shift();
-    const neighbours = findNeighbours(graph, u.id);
-    neighbours.forEach((n) => {
-      if (n.color == COLORS.WHITE) {
-        n.color = COLORS.GREY;
-        n.distance = u.distance + 1;
-        n.PI = u.id;
-        Q.push(n);
+    const currentVertex = Q.shift();
+    const neighbours = findNeighbours(graph, currentVertex.id);
+    neighbours.forEach((adjacentVertx) => {
+      if (adjacentVertx.color == COLORS.WHITE) {
+        adjacentVertx.color = COLORS.GREY;
+        adjacentVertx.distance = currentVertex.distance + 1;
+        adjacentVertx.PI = currentVertex.id;
+        Q.push(adjacentVertx);
         steps.push(structuredClone(graph));
       }
     });
-    u.color = COLORS.BLACK;
+    currentVertex.color = COLORS.BLACK;
+    steps.push(structuredClone(graph));
   }
   return steps;
 };
 
-const findNeighbours = (graph, u) => {
+const findNeighbours = (graph, vertId) => {
   const neighbours_ids = graph.edges
-    .filter((edge) => edge.src == u)
+    .filter((edge) => edge.src == vertId)
     .map((edge) => edge.dest);
   return neighbours_ids.map((id) =>
     graph.vertices.find((vert) => vert.id == id)

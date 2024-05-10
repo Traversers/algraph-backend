@@ -66,8 +66,8 @@ const deleteGraph = async (req, res) => {
 const runAlgorithm = async (req, res) => {
   try {
     const { graphId, algoName, src } = req.body;
-    const isSupportedAlgo = SUPPORTED_ALGORITHMS[algoName] != null;
-    if (!isSupportedAlgo) throw new Error(ERRORS.UNSUPPORTED_ALGORITHM);
+    if (!SUPPORTED_ALGORITHMS[algoName])
+      throw new Error(ERRORS.UNSUPPORTED_ALGORITHM);
     const steps = await graphService.runAlgo(graphId, algoName, src);
     return respondWithStatus(res, CRUD_OPS.UPDATED, steps);
   } catch (err) {
