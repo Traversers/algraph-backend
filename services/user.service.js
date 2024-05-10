@@ -65,6 +65,12 @@ const generateTokens = async (user) => {
   }
 };
 
+const extractToken = (req) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+  return token;
+};
+
 module.exports = {
   createOne,
   readOne,
@@ -73,4 +79,5 @@ module.exports = {
   deleteOne,
   isUserExists,
   generateTokens,
+  extractToken,
 };

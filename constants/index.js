@@ -20,6 +20,7 @@ const ERRORS = {
   USER_NOT_FOUND: 'User not found!',
   NAME_OR_PASSWORD_ERROR: 'Email and password are required',
   GENERETING_TOKENS_ERROR: 'Error generating tokens',
+  UNAUTHORIZED: 'Unauthorized user',
 };
 
 const ERROR_CODES_MAP = new Map([
