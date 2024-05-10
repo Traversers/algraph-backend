@@ -13,10 +13,14 @@ const ERRORS = {
   INTERNAL_ERROR: "Internal error occurred",
   WRONG_EMAIL_OR_PASSSWORD: "Wrong Email or Password!",
   NAME_OR_EMAIL_ERROR: "Invalid Name or Email!",
-  INVALID_PASSWORD: "Invalid Password!",
-  INVALID_EMAIL_ADDRESS: "Invalid Email Address!",
+  INVALID_PASSWORD: "Invalid credentials!",
+  INVALID_EMAIL_ADDRESS: "Invalid credentials!",
+  INVALID_CREDENTIALS: "Invalid credentials!",
   EMPTY_GRAPH: "Can't create empty graphs, at least 1 vertex is required.",
   UNSUPPORTED_ALGORITHM: "Unsupported algorithm request",
+  USER_NOT_FOUND: "User not found!",
+  NAME_OR_PASSWORD_ERROR: "Email and password are required",
+  GENERETING_TOKENS_ERROR: "Error generating tokens",
 };
 
 const ERROR_CODES_MAP = new Map([
@@ -49,6 +53,8 @@ const SUCCESS_CODES_MAP = new Map([
 
 const GRAPH_FIELDS = { WEIGHT: "weight", DESTINATION: "destination" };
 
+const TOKEN_EXPIRATION = 100000;
+
 const COLORS = { BLACK: "black", GREY: "grey", WHITE: "white" };
 
 const SUPPORTED_ALGORITHMS = { BFS: "BFS" };
@@ -64,4 +70,5 @@ module.exports = {
   GRAPH_FIELDS,
   COLORS,
   SUPPORTED_ALGORITHMS,
+  TOKEN_EXPIRATION,
 };

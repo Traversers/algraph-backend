@@ -1,6 +1,6 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const { AVATAR_GUEST } = require("../constants");
+const { AVATAR_GUEST } = require('../constants');
 
 const User = new Schema({
   name: {
@@ -12,10 +12,6 @@ const User = new Schema({
     required: true,
   },
   password: {
-    type: String,
-    required: true,
-  },
-  salt: {
     type: String,
     required: true,
   },
@@ -41,4 +37,4 @@ const User = new Schema({
   },
 });
 
-module.exports = mongoose.model("User", User);
+module.exports = mongoose.model('User', User);

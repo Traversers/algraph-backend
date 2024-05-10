@@ -1,4 +1,6 @@
-const userService = require("../services/user.service");
+const { HttpStatusCode } = require('axios');
+const userService = require('../services/user.service');
+const { readOne } = require('../services/user.service');
 
 const {
   isValidEmail,
@@ -8,71 +10,78 @@ const {
   getPublicUserData,
   respondWithError,
   respondWithStatus,
-} = require("../services/utils");
+} = require('../services/utils');
 
-const bcrypt = require("bcrypt");
+const bcrypt = require('bcrypt');
 
-const { SERCURITY, ERRORS, CRUD_OPS } = require("../constants");
+const { SERCURITY, ERRORS, CRUD_OPS } = require('../constants');
 
 const register = async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
     if (await userService.isUserExists(name, email)) {
-      throw new Error(ERRORS.NAME_OR_EMAIL_ERROR);
+      return res.status(HttpStatusCode.Conflict).send('user already exists');
     }
-
-    if (!isValidEmail(email)) {
-      throw new Error(ERRORS.INVALID_EMAIL_ADDRESS);
-    }
-    if (!isValidPassword(password)) {
-      throw new Error(ERRORS.INVALID_PASSWORD);
-    }
-
-    const pepper = parseInt(Math.random() * SERCURITY.PEPPER_RANGE);
     const userSalt = await bcrypt.genSalt(SERCURITY.SALT_ROUNDS);
-    const hashedPassword = await bcrypt.hash(
-      composite(password, userSalt, pepper),
-      SERCURITY.SALT_ROUNDS
-    );
+    const hashedPassword = await bcrypt.hash(password, userSalt);
     if (!hashedPassword) {
-      throw new Error(ERRORS.INTERNAL_ERROR);
+      throw new Error(HttpStatusCode.InternalServerError);
     }
-
     const newUser = await userService.createOne({
       name,
       email,
       password: hashedPassword,
-      salt: userSalt,
     });
     if (!newUser) {
-      throw new Error(ERRORS.INTERNAL_ERROR);
+      return res.status(HttpStatusCode.InternalServerError).send();
     }
-    return respondWithStatus(res, CRUD_OPS.CREATED, getPublicUserData(newUser));
+    return res.status(HttpStatusCode.Created).send(newUser);
   } catch (err) {
-    return respondWithError(res, err.message);
+    if (err.message === HttpStatusCode.BadRequest) {
+      return res
+        .status(HttpStatusCode.BadRequest)
+        .send(ERRORS.NAME_OR_EMAIL_ERROR);
+    }
+    if (err.message === HttpStatusCode.InternalServerError) {
+      return res
+        .status(HttpStatusCode.InternalServerError)
+        .send(ERRORS.INTERNAL_ERROR);
+    }
+    return res.status(HttpStatusCode.InternalServerError).send(err.message);
   }
 };
 
 const login = async (req, res) => {
   try {
     const { name, password } = req.body;
-    const user = await userService.readOne(name);
-    if (!user) {
-      throw new Error(ERRORS.NAME_OR_EMAIL_ERROR);
+    if (name === undefined || password === undefined) {
+      return res
+        .status(HttpStatusCode.BadRequest)
+        .send(ERRORS.INVALID_CREDENTIALS);
     }
-    const authenticated = await compare(
-      user.password,
-      user.salt,
-      password,
-      SERCURITY.PEPPER_RANGE
-    );
-    if (!authenticated) {
-      throw new Error(ERRORS.WRONG_EMAIL_OR_PASSSWORD);
+    const user = await readOne(name);
+    if (user == null) {
+      return res
+        .status(HttpStatusCode.Unauthorized)
+        .send(ERRORS.INVALID_CREDENTIALS);
     }
-    return respondWithStatus(res, CRUD_OPS.READ_ONE, getPublicUserData(user));
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      res.status(HttpStatusCode.BadRequest).send(ERRORS.INVALID_CREDENTIALS);
+    }
+
+    const tokens = await userService.generateTokens(user);
+    if (tokens == null) {
+      return res
+        .status(HttpStatusCode.InternalServerError)
+        .send(ERRORS.GENERETING_TOKENS_ERROR);
+    }
+    console.log('tokens', tokens);
+    return res.status(HttpStatusCode.Ok).json(tokens);
   } catch (err) {
-    return respondWithError(res, err.message);
+    console.log('error logging in', err);
+    return res.status(HttpStatusCode.InternalServerError).send(err.message);
   }
 };
 
