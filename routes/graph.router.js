@@ -6,5 +6,6 @@ addGraphRouter.get("/all", graphController.getAllGraphs);
 addGraphRouter.post("/getGraph", graphController.getGraphById);
 addGraphRouter.put("/update", graphController.updateGraph);
 addGraphRouter.delete("/delete", graphController.deleteGraph);
+addGraphRouter.post("/runAlgo", graphController.runAlgorithm);
 
 module.exports = addGraphRouter;

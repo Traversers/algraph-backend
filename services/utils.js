@@ -68,6 +68,12 @@ const respondWithError = (res, errorMsg) => {
   return res.status(ERROR_CODES_MAP.get(errorMsg)).send({ error: errorMsg });
 };
 
+const clearData = (graph) => {
+  if (graph._id) delete graph._id;
+  if (graph.vertices) graph.vertices.forEach((vert) => delete vert._id);
+  if (graph.edges) graph.edges.forEach((edge) => delete edge._id);
+};
+
 module.exports = {
   isValidEmail,
   isValidPassword,
@@ -77,4 +83,5 @@ module.exports = {
   getPublicUserData,
   respondWithError,
   respondWithStatus,
+  clearData,
 };
