@@ -17,10 +17,11 @@ const ERRORS = {
   INVALID_EMAIL_ADDRESS: "Invalid credentials!",
   INVALID_CREDENTIALS: "Invalid credentials!",
   EMPTY_GRAPH: "Can't create empty graphs, at least 1 vertex is required.",
+  USER_NOT_FOUND: 'User not found!',
+  NAME_OR_PASSWORD_ERROR: 'Email and password are required',
+  GENERETING_TOKENS_ERROR: 'Error generating tokens',
+  UNAUTHORIZED: 'Unauthorized user',
   UNSUPPORTED_ALGORITHM: "Unsupported algorithm request",
-  USER_NOT_FOUND: "User not found!",
-  NAME_OR_PASSWORD_ERROR: "Email and password are required",
-  GENERETING_TOKENS_ERROR: "Error generating tokens",
 };
 
 const ERROR_CODES_MAP = new Map([

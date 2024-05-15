@@ -1,11 +1,14 @@
-const addGraphRouter = require("express").Router();
-const graphController = require("../controllers/graph.controller");
+const addGraphRouter = require('express').Router();
+const graphController = require('../controllers/graph.controller');
+const { default: authMiddleware } = require('../middlewares/auth.middleware');
 
-addGraphRouter.post("/publish", graphController.publishGraph);
-addGraphRouter.get("/all", graphController.getAllGraphs);
-addGraphRouter.post("/getGraph", graphController.getGraphById);
-addGraphRouter.put("/update", graphController.updateGraph);
-addGraphRouter.delete("/delete", graphController.deleteGraph);
+
+addGraphRouter.post('/publish', authMiddleware, graphController.publishGraph);
+addGraphRouter.get('/all', authMiddleware, graphController.getAllGraphs);
+addGraphRouter.post('/getGraph', authMiddleware, graphController.getGraphById);
+addGraphRouter.put('/update', authMiddleware, graphController.updateGraph);
+addGraphRouter.delete('/delete', authMiddleware, graphController.deleteGraph);
 addGraphRouter.post("/runAlgo", graphController.runAlgorithm);
+
 
 module.exports = addGraphRouter;
