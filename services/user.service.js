@@ -74,6 +74,9 @@ const extractToken = (req) => {
 
 const getUserByToken = async (token) => {
   const decoded = jwt.verify(token, process.env.TOKEN_SECRET);
+  if (!decoded) {
+    return null;
+  }
   return await User.findById(decoded._id);
 };
 
