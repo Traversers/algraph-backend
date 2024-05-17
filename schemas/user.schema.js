@@ -15,6 +15,10 @@ const User = new Schema({
     type: String,
     required: true,
   },
+  tokens: {
+    type: [String],
+    default: [],
+  },
   createdAt: {
     type: Date,
     default: () => Date.now(),

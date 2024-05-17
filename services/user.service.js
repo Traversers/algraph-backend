@@ -4,6 +4,7 @@ const { compare } = require('./utils');
 require('dotenv').config();
 const bcrypt = require('bcrypt');
 const { ERRORS, TOKEN_EXPIRATION } = require('../constants');
+
 const createOne = async ({ name, email, password }) => {
   const newUser = await User.create({ name, email, password });
   await newUser.save();
@@ -71,6 +72,14 @@ const extractToken = (req) => {
   return token;
 };
 
+const getUserByToken = async (token) => {
+  const decoded = jwt.verify(token, process.env.TOKEN_SECRET);
+  if (!decoded) {
+    return null;
+  }
+  return await User.findById(decoded._id);
+};
+
 module.exports = {
   createOne,
   readOne,
@@ -80,4 +89,5 @@ module.exports = {
   isUserExists,
   generateTokens,
   extractToken,
+  getUserByToken,
 };

@@ -1,6 +1,6 @@
-const AVATAR_GUEST = "guest";
+const AVATAR_GUEST = 'guest';
 
-const DEFAULT_USER_NAME = "system";
+const DEFAULT_USER_NAME = 'system';
 
 const SERCURITY = {
   SALT_ROUNDS: parseInt(process.env.SALT_ROUNDS) || 12,
@@ -8,20 +8,20 @@ const SERCURITY = {
 };
 
 const ERRORS = {
-  GRAPH_NOT_FOUND: "Graph not found!",
-  INVALID_GRAPH: "Invalid graph format!",
-  INTERNAL_ERROR: "Internal error occurred",
-  WRONG_EMAIL_OR_PASSSWORD: "Wrong Email or Password!",
-  NAME_OR_EMAIL_ERROR: "Invalid Name or Email!",
-  INVALID_PASSWORD: "Invalid credentials!",
-  INVALID_EMAIL_ADDRESS: "Invalid credentials!",
-  INVALID_CREDENTIALS: "Invalid credentials!",
+  GRAPH_NOT_FOUND: 'Graph not found!',
+  INVALID_GRAPH: 'Invalid graph format!',
+  INTERNAL_ERROR: 'Internal error occurred',
+  WRONG_EMAIL_OR_PASSSWORD: 'Wrong Email or Password!',
+  NAME_OR_EMAIL_ERROR: 'Invalid Name or Email!',
+  INVALID_PASSWORD: 'Invalid credentials!',
+  INVALID_EMAIL_ADDRESS: 'Invalid credentials!',
+  INVALID_CREDENTIALS: 'Invalid credentials!',
   EMPTY_GRAPH: "Can't create empty graphs, at least 1 vertex is required.",
   USER_NOT_FOUND: 'User not found!',
   NAME_OR_PASSWORD_ERROR: 'Email and password are required',
   GENERETING_TOKENS_ERROR: 'Error generating tokens',
   UNAUTHORIZED: 'Unauthorized user',
-  UNSUPPORTED_ALGORITHM: "Unsupported algorithm request",
+  UNSUPPORTED_ALGORITHM: 'Unsupported algorithm request',
 };
 
 const ERROR_CODES_MAP = new Map([
@@ -37,11 +37,11 @@ const ERROR_CODES_MAP = new Map([
 ]);
 
 const CRUD_OPS = {
-  CREATED: "Create",
-  READ_ONE: "Read One",
-  READ_MANY: "Read Many",
-  UPDATED: "Update",
-  DELETED: "Delete",
+  CREATED: 'Create',
+  READ_ONE: 'Read One',
+  READ_MANY: 'Read Many',
+  UPDATED: 'Update',
+  DELETED: 'Delete',
 };
 
 const SUCCESS_CODES_MAP = new Map([
@@ -52,13 +52,16 @@ const SUCCESS_CODES_MAP = new Map([
   [CRUD_OPS.DELETED, 204],
 ]);
 
-const GRAPH_FIELDS = { WEIGHT: "weight", DESTINATION: "destination" };
+const GRAPH_FIELDS = { WEIGHT: 'weight', DESTINATION: 'destination' };
 
 const TOKEN_EXPIRATION = 100000;
 
-const COLORS = { BLACK: "black", GREY: "grey", WHITE: "white" };
+const COLORS = { BLACK: 'black', GREY: 'grey', WHITE: 'white' };
 
-const SUPPORTED_ALGORITHMS = { BFS: "BFS" };
+const SUPPORTED_ALGORITHMS = { BFS: 'BFS' };
+
+const ACCESS_TOKEN_KEY = 'access-token';
+const REFRESH_TOKEN_KEY = 'refresh-token';
 
 module.exports = {
   AVATAR_GUEST,
@@ -72,4 +75,6 @@ module.exports = {
   COLORS,
   SUPPORTED_ALGORITHMS,
   TOKEN_EXPIRATION,
+  ACCESS_TOKEN_KEY,
+  REFRESH_TOKEN_KEY,
 };

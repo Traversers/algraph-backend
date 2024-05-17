@@ -55,13 +55,13 @@ const register = async (req, res) => {
 const login = async (req, res) => {
   try {
     const { name, password } = req.body;
-    if (name === undefined || password === undefined) {
+    if (!name || !password) {
       return res
         .status(HttpStatusCode.BadRequest)
         .send(ERRORS.INVALID_CREDENTIALS);
     }
     const user = await readOne(name);
-    if (user == null) {
+    if (!user) {
       return res
         .status(HttpStatusCode.Unauthorized)
         .send(ERRORS.INVALID_CREDENTIALS);
@@ -72,12 +72,14 @@ const login = async (req, res) => {
     }
 
     const tokens = await userService.generateTokens(user);
-    if (tokens == null) {
+    if (!tokens) {
       return res
         .status(HttpStatusCode.InternalServerError)
         .send(ERRORS.GENERETING_TOKENS_ERROR);
     }
     console.log('tokens', tokens);
+    user.tokens.push(tokens.accessToken, tokens.refreshToken);
+    await user.save();
     return res.status(HttpStatusCode.Ok).json(tokens);
   } catch (err) {
     console.log('error logging in', err);
@@ -113,4 +115,26 @@ const deleteUser = async (req, res) => {
   }
 };
 
-module.exports = { register, login, getAllUsers, updateUser, deleteUser };
+const logout = async (req, res) => {
+  try {
+    const { name } = req.body;
+    const user = await readOne(name);
+    if (!user) {
+      return res.status(HttpStatusCode.NotFound).send(ERRORS.USER_NOT_FOUND);
+    }
+    user.tokens = [];
+    await user.save();
+    return res.status(HttpStatusCode.Ok).send('Logged out');
+  } catch (err) {
+    return res.status(HttpStatusCode.InternalServerError).send(err.message);
+  }
+};
+
+module.exports = {
+  register,
+  login,
+  getAllUsers,
+  updateUser,
+  deleteUser,
+  logout,
+};
